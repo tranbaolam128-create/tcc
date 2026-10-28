@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ôn tập QLTCC – Quiz bài tập có lời giải</title>
+<style>
+:root{--a:#ef4444;--b:#f97316;--ink:#1f2340}
+body{margin:0;min-height:100vh;font-family:"Nunito","Segoe UI",system-ui,sans-serif;color:var(--ink);
+background:linear-gradient(115deg,#ffd6d6,#ffe1c4,#fff4b8,#d4f5dc,#cfe8ff,#e3d6ff,#ffd6d6);background-size:400% 400%;animation:flow 30s ease-in-out infinite}
+@keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 20px;background:#ffffffe8;backdrop-filter:blur(8px);box-shadow:0 2px 14px #0001}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#ef4444,#f97316,#eab308,#22c55e,#8b5cf6,#ef4444);background-size:300% 100%;animation:run 5s linear infinite}
+@keyframes run{to{background-position:300% 0}}
+h1{margin:0;font-size:1.25rem;font-weight:900;background:linear-gradient(90deg,#ef4444,#f97316,#eab308,#22c55e,#8b5cf6,#ef4444);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:run 6s linear infinite}
+.stats span{background:#fff;border:2px solid #0001;border-radius:999px;padding:5px 13px;font-weight:800;margin-left:6px}
+main{max-width:1080px;margin:18px auto;padding:0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.bar button{border:0;background:#fff;color:var(--ink);border-radius:10px;padding:8px 14px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #0002;font-family:inherit;transition:.2s}
+.bar button.on{background:linear-gradient(90deg,var(--a),var(--b));color:#fff}
+.wrap{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+.card,.side{background:#fff;border-radius:16px;padding:22px;box-shadow:0 8px 26px #0001;border-top:6px solid var(--a);transition:border-color .6s}
+.side h3{margin:0 0 10px;font-size:1rem}
+.pal{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.pal button{aspect-ratio:1;border:2px solid #d9dfec;background:#fff;border-radius:10px;font-weight:800;cursor:pointer;font-family:inherit}
+.pal .done{background:#22c55e;border-color:#22c55e;color:#fff}.pal .cur{border-color:var(--a);box-shadow:0 0 0 3px #0002}
+.formula{background:#fff8e1;border-left:5px solid #eab308;border-radius:10px;padding:10px 12px;font-size:.88rem;line-height:1.55}
+.meta{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:.85rem}
+.tag{background:linear-gradient(90deg,var(--a),var(--b));color:#fff;padding:4px 12px;border-radius:999px}
+.data{background:#f6f7fb;border-radius:12px;padding:12px 14px;line-height:1.6;font-size:.95rem;margin:14px 0}
+h2{font-size:1.15rem;line-height:1.5;margin:14px 0 6px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:9px 0;padding:11px 15px;border:2px solid #dfe5f2;border-radius:12px;background:#fff;font-size:1rem;cursor:pointer;transition:.2s;font-family:inherit;color:var(--ink)}
+.opt b{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#eef2fb}
+.opt:hover:not(:disabled){border-color:var(--a);transform:translateX(4px)}
+.opt.bad{border-color:#ef4444;background:#fff0f0;animation:sh .35s}.opt.bad b{background:#ef4444;color:#fff}
+.opt.good{border-color:#22c55e;background:#e9fbf0;font-weight:800}.opt.good b{background:#22c55e;color:#fff}
+@keyframes sh{25%{margin-left:-8px}75%{margin-left:8px}}
+.sol{display:none;margin-top:16px;border-radius:14px;background:#eefaff;border-left:6px solid #0ea5e9;padding:14px 16px;line-height:1.65}
+.sol h4{margin:0 0 8px}.sol ol{margin:6px 0 10px;padding-left:22px}
+.tip{background:#fff3cd;border-radius:10px;padding:9px 12px;font-weight:700;margin-top:8px}
+.note{background:#ffe8e8;border-radius:10px;padding:9px 12px;margin-top:8px;font-size:.9rem}
+.nav{display:flex;justify-content:space-between;margin-top:18px}
+.nav button{background:linear-gradient(90deg,var(--a),var(--b));color:#fff;border:0;border-radius:10px;padding:11px 24px;font-weight:800;cursor:pointer;font-family:inherit}
+.nav button:disabled{opacity:.35}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:9}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<header><h1>📘 Ôn tập QLTCC – Bài tập có lời giải</h1><div class="stats"><span id="sc">⭐ 0</span><span id="st">🔥 0</span></div></header>
+<main><div class="bar" id="bar"></div>
+<div class="wrap"><div class="card" id="card"></div><aside class="side"><h3>📋 Danh sách câu</h3><div class="pal" id="pal"></div><div class="formula" id="fm"></div></aside></div></main>
+<script>
+const CH={2:"Chương 2 – Thuế",3:"Chương 3 – Chi thường xuyên",5:"Chương 5 – Bội chi NSNN"};
+const FM={2:"<b>🧠 Nhớ nhanh</b><br>• Giá có TTĐB → <b>chia (1+t)</b> để tìm giá tính thuế<br>• NK: Giá tính thuế = <b>CIF</b> = FOB + I + F<br>• GTGT = đầu ra − đầu vào<br>• Nhập khẩu: <b>NK → TTĐB → GTGT</b> (cộng dồn)<br>• TNDN = (DT + TN khác − CP − TN miễn − lỗ) × t",
+3:"<b>🧠 Nhớ nhanh</b><br>• Bình quân = đầu năm + tăng × (tháng có mặt/12) − giảm × (tháng vắng/12)<br>• “Từ tháng t” → có/vắng <b>13 − t</b> tháng<br>• Chi = số bình quân × định mức<br>• Mua sắm, sửa chữa = nguyên giá TSCĐ × tỷ lệ",
+5:"<b>🧠 Nhớ nhanh</b><br>• Bội chi = <b>Chi (không gồm nợ gốc) − Thu</b><br>• Bội chi NSNN = bội chi NSTW + bội chi NSĐP cấp tỉnh<br>• Dự phòng: <b>2%–5%</b> tổng chi mỗi cấp (Luật NSNN 2025)<br>• Chi cấp tỉnh không tính chi từ bổ sung có mục tiêu"};
+const Q=[];const add=(c,q,d,a,k,steps,tip,note)=>Q.push({c,q,d,a,k,steps,tip,note});
+/* ===== CHƯƠNG 2 ===== */
+add(2,"Tính thuế TTĐB phải nộp của công ty X.","Xe ô tô chịu TTĐB, thuế suất 50%. Trả chậm 6 tháng: 600 tr/xe (chưa GTGT); trả ngay: 570 tr/xe. Bán 12 xe: 10 xe trả chậm, 2 xe trả ngay.",["2.280 triệu","2.380 triệu","2.400 triệu","3.420 triệu"],0,
+["Bán trả chậm: giá tính thuế lấy theo <b>giá trả tiền ngay = 570 tr</b> (lãi trả chậm 30 tr không tính thuế) → cả 12 xe cùng 570 tr.","Giá 570 tr đã <b>gồm</b> TTĐB nên: giá tính thuế = 570 ÷ (1 + 50%) = <b>380 tr</b>.","Thuế TTĐB 1 xe = 380 × 50% = <b>190 tr</b>.","Tổng = 190 × 12 = <b>2.280 triệu</b>."],"Lãi trả chậm = bỏ ra; có TTĐB thì CHIA (1+t).","Sai phổ biến: dùng 600 tr cho 10 xe trả chậm → ra 2.380 tr.");
+add(2,"Tính thuế TTĐB công ty A phải nộp.","A mua 12.000 giỏ quà để xuất khẩu, xuất 7.000 giỏ; 5.000 giỏ bán trong nước giá 35.000 đ/giỏ (chưa GTGT). Thuế suất TTĐB 55%.",["62.096.774 đ","0 đồng","68.750.000 đ","96.250.000 đ"],0,
+["7.000 giỏ xuất khẩu thật → <b>không chịu TTĐB</b>.","5.000 giỏ bán nội địa → phải nộp TTĐB.","Giá tính thuế = 35.000 ÷ 1,55 = 22.580,65 đ/giỏ.","Thuế = 5.000 × 22.580,65 × 55% ≈ <b>62.096.774 đ</b>."],"Xuất khẩu = 0; hàng “xuất khẩu hụt” bán trong nước thì nộp bù.");
+add(2,"Tính thuế nhập khẩu công ty A phải nộp.","Nhập 4.150 sp X, giá FOB 9 USD/sp, I+F 0,45 USD/sp, tỷ giá 25.000 đ/USD, thuế suất NK 25%.",["245.109.375 đ","233.437.500 đ","980.437.500 đ","98.043.750 đ"],0,
+["Giá tính thuế = <b>CIF</b> = FOB + I + F = 9 + 0,45 = 9,45 USD/sp.","Đổi VNĐ: 9,45 × 25.000 = 236.250 đ/sp → × 4.150 = 980.437.500 đ.","Thuế NK = 980.437.500 × 25% = <b>245.109.375 đ</b>."],"CIF = FOB + I + F. Thiếu I+F là sai!");
+add(2,"Nếu giá hợp đồng theo CIF 5 USD/sp, thuế nhập khẩu thay đổi thế nào?","Cùng 4.150 sp, tỷ giá 25.000 đ/USD, thuế suất 25%.",["Giảm còn 129.687.500 đ (giảm 115.421.875 đ)","Giữ nguyên 245.109.375 đ","141.359.375 đ","Tăng lên 259.375.000 đ"],0,
+["Giá CIF <b>đã gồm</b> I+F nên không cộng thêm nữa.","Giá tính thuế = 5 × 25.000 × 4.150 = 518.750.000 đ.","Thuế = 518.750.000 × 25% = <b>129.687.500 đ</b>.","Chênh lệch: 245.109.375 − 129.687.500 = <b>giảm 115.421.875 đ</b>."],"CIF rồi thì đừng cộng I+F lần nữa.");
+add(2,"Tính thuế nhập khẩu công ty A phải nộp.","Nhập 4.300 sp X, giá CIF 2,5 USD/sp. Hải quan kiểm tra thiếu 110 sp. Tỷ giá 25.000 đ/USD, thuế suất 25%.",["65.468.750 đ","67.187.500 đ","261.875.000 đ","1.718.750 đ"],0,
+["Thuế tính trên <b>hàng thực nhập</b>: 4.300 − 110 = 4.190 sp.","Giá tính thuế = 4.190 × 2,5 × 25.000 = 261.875.000 đ.","Thuế NK = 261.875.000 × 25% = <b>65.468.750 đ</b>."],"Thiếu hàng → trừ ra trước khi tính thuế.");
+add(2,"Tính thuế GTGT công ty A phải nộp.","Bán 7.350 sp, giá 125.000 đ/sp (chưa GTGT). GTGT đầu vào được khấu trừ 3.150.000 đ. Thuế suất 20% (theo đề).",["180.600.000 đ","183.750.000 đ","186.900.000 đ","88.725.000 đ"],0,
+["Doanh thu = 7.350 × 125.000 = 918.750.000 đ.","GTGT đầu ra = 918.750.000 × 20% = 183.750.000 đ.","Phải nộp = đầu ra − đầu vào = 183.750.000 − 3.150.000 = <b>180.600.000 đ</b>."],"Nộp = ĐẦU RA − ĐẦU VÀO.","Lưu ý: 20% là số liệu đề bài; thuế suất GTGT phổ thông theo luật hiện hành là 10% (có thể có chính sách giảm tạm thời), hãy tra lại văn bản mới nhất.");
+add(2,"Tính GTGT công ty M phải nộp (phương pháp khấu trừ).","Mua 22.000 sp A giá 62.000 đ/sp; bán lại 86.000 đ/sp (đều chưa GTGT). Thuế suất 20%.",["105.600.000 đ","528.000.000 đ","378.400.000 đ","272.800.000 đ"],0,
+["Giá trị tăng thêm/sp = 86.000 − 62.000 = 24.000 đ.","Tổng giá trị tăng thêm = 22.000 × 24.000 = 528.000.000 đ.","GTGT phải nộp = 528.000.000 × 20% = <b>105.600.000 đ</b>.","(Kiểm tra: đầu ra 378,4 tr − đầu vào 272,8 tr = 105,6 tr ✔)"],"Thương mại: nộp = (giá bán − giá mua) × SL × t.");
+add(2,"Tính thuế GTGT DN A phải nộp với xe nhập khẩu.","Xe 4 chỗ nhập khẩu, giá tại cửa khẩu 800 tr/chiếc. Thuế NK 60%, TTĐB 65%, GTGT 20%.",["422,4 triệu","256 triệu","160 triệu","832 triệu"],0,
+["Thuế NK = 800 × 60% = <b>480</b> tr.","Giá tính TTĐB = 800 + 480 = 1.280 tr → TTĐB = 1.280 × 65% = <b>832</b> tr.","Giá tính GTGT = 800 + 480 + 832 = <b>2.112</b> tr.","GTGT = 2.112 × 20% = <b>422,4 triệu</b>."],"Nhập khẩu: NK → TTĐB → GTGT, thuế sau tính trên thuế trước.");
+add(2,"Xác định thuế TNDN phải nộp trong năm.","DN nộp GTGT khấu trừ (triệu đồng): doanh thu 42.000; chi phí được trừ 21.100; thu nhập khác 3.200; thu nhập miễn thuế 4.050. Thuế suất 25%.",["5.012,5 triệu","6.025 triệu","4.212,5 triệu","10.500 triệu"],0,
+["TN chịu thuế = DT + TN khác − chi phí − TN miễn thuế.","= 42.000 + 3.200 − 21.100 − 4.050 = <b>20.050</b> tr.","Thuế TNDN = 20.050 × 25% = <b>5.012,5 triệu</b>."],"TNDN = (Thu − Chi − Miễn) × t.","Đề ghi thu nhập miễn thuế 4.050 “trong đó” thu nhập khác 3.200 nhưng 4.050 > 3.200, nên ở đây hiểu 4.050 là khoản miễn thuế được trừ riêng. Nên hỏi lại giảng viên. Thuế suất TNDN phổ thông hiện hành là 20% (đề dùng 25%).");
+add(2,"8a. Nếu có lỗ kết chuyển 600 triệu thì thuế TNDN là bao nhiêu?","Dữ liệu như câu 8.",["4.862,5 triệu","5.162,5 triệu","5.012,5 triệu","4.712,5 triệu"],0,
+["Lỗ được trừ vào thu nhập: 20.050 − 600 = <b>19.450</b> tr.","Thuế = 19.450 × 25% = <b>4.862,5 triệu</b>.","(Giảm 600 × 25% = 150 tr so với 5.012,5)"],"Có lỗ → TRỪ trước, rồi mới nhân thuế suất.");
+add(2,"8b. Nếu trích quỹ phát triển KHCN 5,5% thu nhập tính thuế thì thuế TNDN là bao nhiêu?","Dữ liệu như câu 8 (không có lỗ kết chuyển).",["4.736,81 triệu","5.288,19 triệu","4.862,5 triệu","1.102,75 triệu"],0,
+["Trích quỹ = 20.050 × 5,5% = <b>1.102,75</b> tr.","Thu nhập tính thuế còn lại = 20.050 − 1.102,75 = <b>18.947,25</b> tr.","Thuế = 18.947,25 × 25% ≈ <b>4.736,81 triệu</b>."],"Trích quỹ KHCN → được TRỪ trước khi tính thuế.");
+/* ===== CHƯƠNG 3 ===== */
+add(3,"Số sinh viên bình quân dự kiến có mặt năm kế hoạch?","Đầu năm 15.000 SV; tuyển mới 3.000 SV học 5 tháng; tốt nghiệp 2.000 SV không học 7 tháng.",["15.083 SV","16.000 SV","16.250 SV","15.917 SV"],0,
+["Công thức: bình quân = đầu năm + tăng × (tháng có mặt/12) − giảm × (tháng vắng/12).","Tăng: 3.000 × 5/12 = +1.250.","Giảm: 2.000 × 7/12 = −1.166,67.","Bình quân = 15.000 + 1.250 − 1.166,67 ≈ <b>15.083 SV</b>."],"Có mặt bao lâu thì nhân bấy nhiêu/12.");
+add(3,"Số học sinh bình quân dự kiến có mặt năm kế hoạch?","THPT X: cuối năm báo cáo 3.200 HS; dự kiến 520 HS tốt nghiệp; tuyển mới 800 HS lớp 10 nhập học từ tháng 8.",["3.273 HS","3.480 HS","3.533 HS","3.473 HS"],0,
+["Tuyển mới từ tháng 8 → có mặt T8–T12 = <b>5 tháng</b>: 800 × 5/12 = +333,33.","Tốt nghiệp (giả định cuối năm học, tháng 6, vắng T7–T12 = 6 tháng): 520 × 6/12 = −260.","Bình quân = 3.200 + 333,33 − 260 ≈ <b>3.273 HS</b>."],"“Từ tháng t” → có mặt 13 − t tháng.","Đề không nêu tháng tốt nghiệp nên mình giả định tháng 6 (vắng 6 tháng). Nếu giảng viên quy ước khác, kết quả sẽ lệch.");
+add(3,"Số giường bệnh bình quân THỰC CÓ dự kiến năm kế hoạch?","Đầu năm 420 giường. Tháng 3 tăng 12; tháng 6 tăng 32; tháng 7 giảm 14; tháng 10 giảm 5.",["440,42 giường","445 giường","443,5 giường","437,5 giường"],0,
+["Quy ước: “tháng t” = có/vắng từ đầu tháng t → <b>13 − t</b> tháng.","T3 +12: 12 × 10/12 = +10.","T6 +32: 32 × 7/12 = +18,67.","T7 −14: 14 × 6/12 = −7. T10 −5: 5 × 3/12 = −1,25.","Bình quân = 420 + 10 + 18,67 − 7 − 1,25 ≈ <b>440,42 giường</b>."],"Đừng cộng trừ thẳng (445) – phải nhân tỷ lệ tháng.");
+add(3,"Muốn tính số giường bệnh bình quân THỰC SỬ DỤNG cần thêm dữ liệu nào?","Đề chỉ cho biến động giường thực có, chưa cho thông tin sử dụng.",["Công suất sử dụng giường bệnh (%)","Không cần, bằng số thực có","Số bác sĩ của bệnh viện","Doanh thu viện phí"],0,
+["Giường thực sử dụng = giường thực có bình quân × <b>công suất sử dụng (%)</b>.","Ví dụ minh họa: nếu công suất 110% → 440,42 × 110% ≈ 484,46 giường.","Đề gốc chưa cho tỷ lệ này nên chưa thể ra số cụ thể."],"Thực sử dụng = thực có × công suất.","Hãy kiểm tra lại đề gốc: có thể thiếu dòng công suất sử dụng giường.");
+add(3,"Số CCVC bình quân dự kiến có mặt trong năm?","Cơ quan có 410 CCVC đầu năm. T2 tuyển +25; T6 +10; T7 điều chuyển đến +5; T8 nghỉ hưu −15; T12 thôi việc −6.",["434,5 người","429 người","440,25 người","431,5 người"],0,
+["T2 +25: 25 × 11/12 = 22,92.","T6 +10: 10 × 7/12 = 5,83.","T7 +5: 5 × 6/12 = 2,5.","T8 −15: 15 × 5/12 = −6,25.","T12 −6: 6 × 1/12 = −0,5.","Bình quân = 410 + 22,92 + 5,83 + 2,5 − 6,25 − 0,5 = <b>434,5 người</b>."],"Mỗi biến động: số người × (13 − t)/12.");
+add(3,"5a. Số CCVC bình quân dự kiến có mặt năm kế hoạch?","Đầu năm 512; tuyển mới 32 CCVC từ tháng 6; 21 CCVC nghỉ việc từ tháng 7.",["520,17 người","523 người","517,5 người","521,92 người"],0,
+["Tuyển từ T6: có mặt 7 tháng → 32 × 7/12 = +18,67.","Nghỉ từ T7: vắng 6 tháng → 21 × 6/12 = −10,5.","Bình quân = 512 + 18,67 − 10,5 ≈ <b>520,17 người</b>."],"Từ T6 → 7 tháng; từ T7 → 6 tháng.");
+add(3,"5b. Số chi cho CCVC trong năm kế hoạch?","Mức chi bình quân 195 triệu đồng/người/năm.",["101.432,5 triệu (≈101,43 tỷ)","101.400 triệu","101.985 triệu","99.840 triệu"],0,
+["Chi CCVC = số bình quân × mức chi.","= 520,17 × 195 ≈ <b>101.432,5 triệu</b> ≈ 101,43 tỷ."],"Chi = số bình quân × định mức.");
+add(3,"5c. Số chi mua sắm, sửa chữa tài sản?","Nguyên giá TSCĐ 310 tỷ đồng; tỷ lệ mua sắm, sửa chữa 2,15%.",["6,665 tỷ","66,65 tỷ","0,6665 tỷ","21,5 tỷ"],0,
+["Chi = nguyên giá × tỷ lệ = 310 × 2,15%.","= 310 × 0,0215 = <b>6,665 tỷ đồng</b>."],"Nhớ đổi % → số thập phân (2,15% = 0,0215).");
+add(3,"5d. Số chi quản lý hành chính?","Mức chi bình quân 41 triệu đồng/CCVC/năm.",["21.326,83 triệu (≈21,33 tỷ)","21.320 triệu","20.992 triệu","21.443 triệu"],0,
+["Chi QLHC = số CCVC bình quân × 41 triệu.","= 520,17 × 41 ≈ <b>21.326,83 triệu</b> ≈ 21,33 tỷ."],"Dùng số BÌNH QUÂN, không dùng số đầu năm (512).");
+add(3,"5e. Tổng chi thường xuyên dự kiến của cơ quan?","Chi nghiệp vụ chuyên môn 11,2 tỷ; kết hợp các kết quả 5b, 5c, 5d.",["140,62 tỷ","119,30 tỷ","133,96 tỷ","129,4 tỷ"],0,
+["Chi cho CCVC: 101,4325 tỷ.","Chi nghiệp vụ chuyên môn: 11,2 tỷ.","Chi mua sắm, sửa chữa: 6,665 tỷ.","Chi quản lý hành chính: 21,3268 tỷ.","Tổng = 101,4325 + 11,2 + 6,665 + 21,3268 ≈ <b>140,62 tỷ đồng</b>."],"Tổng = 4 khoản cộng lại, đừng bỏ sót khoản nào.");
+/* ===== CHƯƠNG 5 ===== */
+add(5,"Bội chi NSNN là bao nhiêu?","NSTW: thu 1.670.000 tỷ, chi 1.800.000 tỷ. Ngân sách địa phương (tỷ đồng): A thu 72.000/chi 76.000; B thu 101.000/chi 120.000; C thu 66.000/chi 66.000.",["153.000 tỷ","130.000 tỷ","23.000 tỷ","149.000 tỷ"],0,
+["Bội chi NSTW = 1.800.000 − 1.670.000 = <b>130.000</b>.","Bội chi NSĐP: A = 4.000; B = 19.000; C = 0 (cân bằng) → <b>23.000</b>.","Bội chi NSNN = 130.000 + 23.000 = <b>153.000 tỷ</b>."],"NSNN = NSTW + NSĐP (chỉ cộng địa phương bị bội chi).","Giả định chi NSTW 1.800.000 chưa gồm chi trả nợ gốc.");
+add(5,"2.1 Xác định bội chi ngân sách trung ương năm N.","Thu NSTƯ: hưởng 100% 810.000; hưởng theo tỷ lệ 480.000; vay 140.000 (vay trả nợ gốc 40.000, vay cho vay lại 32.000). Chi NSTƯ: đầu tư 150.000; dự trữ QG 20.000; thường xuyên 550.000; trả lãi 2.000; trả nợ gốc 12.000; viện trợ 2.000; bổ sung quỹ DTTC 22.000; bổ sung NSĐP 400.000; đầu tư nước ngoài 20.000.",["Không bội chi – thặng dư 124.000 tỷ","Bội chi 124.000 tỷ","Bội chi 12.000 tỷ","Bội chi 140.000 tỷ"],0,
+["Thu cân đối (không tính vay) = 810.000 + 480.000 = <b>1.290.000</b>.","Tổng chi = 1.178.000; bỏ chi trả nợ gốc 12.000 → chi tính bội chi = <b>1.166.000</b>.","Bội chi = chi − thu = 1.166.000 − 1.290.000 = <b>−124.000</b> → thặng dư, <b>không bội chi</b>."],"Bội chi = Chi (không gồm nợ gốc) − Thu; âm nghĩa là thặng dư.","Số liệu đề cho kết quả thặng dư. Nếu đáp án của thầy/cô khác, có thể bảng số liệu chép thiếu hoặc nhầm; nên đối chiếu lại đề gốc.");
+add(5,"2.2 Mức vay trong năm N có đủ bù đắp bội chi NSTƯ không?","Dữ liệu như câu 2.1.",["Đủ – nhu cầu vay 44.000, vay 140.000 còn dư 96.000","Không đủ","Đủ vì 140.000 > 130.000","Không đủ, thiếu 4.000"],0,
+["Nhu cầu vay = bù bội chi (0) + trả nợ gốc (12.000) + cho vay lại (32.000) = <b>44.000</b>.","Mức vay dự kiến = 140.000 ≥ 44.000 → <b>đủ</b>, dư 96.000.","Vì NSTW không bội chi nên không phải vay bù đắp bội chi."],"Vay dùng cho 3 việc: bù bội chi, trả nợ gốc, cho vay lại.");
+add(5,"2.3 Bội chi NSNN năm N có tuân thủ Nghị quyết của Quốc hội không?","GDP dự kiến 10.150.000 tỷ; mức bội chi NSNN không quá 4,3% GDP; tổng bội chi NSĐP cấp tỉnh cuối năm 210.000 tỷ.",["Tuân thủ: 210.000 ≤ 436.450 (≈ 2,07% GDP)","Vi phạm: vượt 4,3% GDP","Tuân thủ vì cộng cả vay 140.000","Không xác định được"],0,
+["Bội chi NSNN = bội chi NSTW (0) + bội chi NSĐP (210.000) = <b>210.000</b>.","Mức trần = 4,3% × 10.150.000 = <b>436.450</b>.","210.000 ≤ 436.450 (≈ 2,07% GDP) → <b>tuân thủ</b>."],"So sánh bội chi với TRẦN % GDP.");
+add(5,"Xác định số tiền chi bổ sung cho ngân sách địa phương.","Năm N (nghìn tỷ): thu NSTW hưởng 1.520; vay 520 (vay trả nợ gốc 60, cho vay lại 30); chi nhiệm vụ NSTW (không gồm bổ sung NSĐP) 720; chi trả nợ gốc 86; bội chi NSTW theo dự toán 410.",["1.210 nghìn tỷ","1.296 nghìn tỷ","790 nghìn tỷ","1.130 nghìn tỷ"],0,
+["Bội chi = (chi nhiệm vụ + chi bổ sung NSĐP) − thu (không tính nợ gốc).","410 = (720 + X) − 1.520","X = 410 + 1.520 − 720 = <b>1.210 nghìn tỷ</b>."],"Biết bội chi thì suy ngược: X = bội chi + thu − chi khác.","Chi trả nợ gốc 86 không đưa vào công thức bội chi.");
+add(5,"5.1 Mức bội chi ngân sách tỉnh X năm N+1?","Ngân sách cấp tỉnh (tỷ đồng): thu thường xuyên 260; viện trợ không hoàn lại 35; bổ sung cân đối từ TƯ 80 (bổ sung có mục tiêu 200); trái phiếu CQĐP 73; vay lại 5; chi nhiệm vụ cấp tỉnh (không gồm chi từ bổ sung có mục tiêu) 410; chi trả nợ gốc 20.",["35 tỷ","55 tỷ thặng dư","95 tỷ","78 tỷ"],0,
+["Thu cân đối = 260 + 35 + 80 = <b>375</b> (không tính vay và không tính bổ sung có mục tiêu 200).","Chi cân đối = <b>410</b> (đề đã loại chi từ nguồn mục tiêu; không tính nợ gốc 20).","Bội chi = 410 − 375 = <b>35 tỷ đồng</b>."],"Thu và chi phải “cùng phạm vi”: bỏ mục tiêu ở cả hai vế.","Các khoản con 6.1–6.7 trong đề cộng lại là 560, không bằng 410, nên dùng tổng 410 do đề ghi. Hãy đối chiếu đề gốc.");
+add(5,"5.2 Mức vay dự kiến năm N+1 có đủ bù đắp bội chi NSĐP tỉnh X không?","Bội chi 35 tỷ; trả nợ gốc 20 tỷ; trái phiếu CQĐP 73 tỷ; vay lại 5 tỷ.",["Đủ – cần 55, vay được 78","Không đủ","Đủ vì 78 > 35 nên không cần trả gốc","Không đủ, thiếu 20"],0,
+["Nhu cầu vay = bù bội chi 35 + trả nợ gốc 20 = <b>55 tỷ</b>.","Nguồn vay = 73 + 5 = <b>78 tỷ</b> ≥ 55 → <b>đủ</b> (dư 23 tỷ)."],"Nhớ cộng cả khoản trả nợ gốc vào nhu cầu vay.");
+add(5,"5.3 Bố trí dự phòng ngân sách cấp tỉnh năm N+1 có đúng quy định của Luật NSNN không?","Dự phòng ngân sách cấp tỉnh 5 tỷ; tổng chi thuộc nhiệm vụ cấp tỉnh (không gồm chi từ bổ sung có mục tiêu) 410 tỷ.",["Không đúng: 5/410 ≈ 1,22% < 2%","Đúng vì nhỏ hơn 5%","Đúng vì lớn hơn 1%","Không đúng vì vượt 5%"],0,
+["Luật NSNN: dự phòng từ <b>2% đến 5%</b> tổng chi mỗi cấp (Luật 2015 là 2%–4%); chi cấp dưới không tính chi bổ sung có mục tiêu từ cấp trên.","Mức tối thiểu = 410 × 2% = <b>8,2 tỷ</b> (tối đa 5% ≈ 20,5 tỷ).","Thực tế 5 tỷ ≈ 1,22% → <b>thấp hơn mức tối thiểu, không đúng quy định</b>."],"Dự phòng phải nằm trong khung 2%–5%.","Dù áp dụng khung 2%–4% (Luật 2015) hay 2%–5% (Luật 2025), 1,22% đều không đạt.");
+/* ===== LOGIC ===== */
+const AC=[["#ef4444","#f97316"],["#f97316","#eab308"],["#eab308","#22c55e"],["#22c55e","#0ea5e9"],["#8b5cf6","#ec4899"]];
+let ai=0,list=[],i=0,ch=0,score=0,streak=0,solved=new Set,tried=new Set;
+const $=s=>document.querySelector(s),card=$("#card");
+function theme(){ai=(ai+1)%AC.length;document.documentElement.style.setProperty("--a",AC[ai][0]);document.documentElement.style.setProperty("--b",AC[ai][1])}
+function bar(){const b=$("#bar");b.innerHTML="";[[0,"Tất cả"],...Object.entries(CH)].forEach(([k,v])=>{const e=document.createElement("button");e.textContent=v;e.className=ch==k?"on":"";e.onclick=()=>{ch=+k;list=Q.filter(q=>!ch||q.c==ch);i=0;bar();render()};b.append(e)})}
+function hud(){$("#sc").textContent="⭐ "+score;$("#st").textContent="🔥 "+streak;
+ $("#pal").innerHTML=list.map((x,n)=>`<button class="${solved.has(x.q+x.d)?"done":""} ${n==i?"cur":""}" data-n="${n}">${n+1}</button>`).join("");
+ $("#pal").onclick=e=>{if(e.target.dataset.n!==undefined){i=+e.target.dataset.n;render()}};$("#fm").innerHTML=FM[list[i].c]}
+function render(){const q=list[i];
+ card.innerHTML=`<div class="meta"><span class="tag">${CH[q.c]}</span><span>Câu ${i+1}/${list.length}</span></div><div class="data">📌 ${q.d}</div><h2>${q.q}</h2>`+
+ q.a.map((x,n)=>`<button class="opt" data-n="${n}"><b>${"ABCD"[n]}</b><span>${x}</span></button>`).join("")+
+ `<div class="sol" id="sol"><h4>✅ Lời giải chi tiết</h4><ol>${q.steps.map(s=>`<li>${s}</li>`).join("")}</ol><div class="tip">💡 Mẹo nhớ: ${q.tip}</div>${q.note?`<div class="note">⚠️ ${q.note}</div>`:""}</div>
+ <div class="nav"><button id="pv" ${i==0?"disabled":""}>← Trước</button><button id="nx" ${i==list.length-1?"disabled":""}>Sau →</button></div>`;
+ card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(b,q));
+ $("#pv").onclick=()=>{i--;theme();render()};$("#nx").onclick=()=>{i++;theme();render()};hud()}
+function pick(b,q){const key=q.q+q.d;
+ if(+b.dataset.n===q.k){b.classList.add("good");card.querySelectorAll(".opt").forEach(o=>o.disabled=true);$("#sol").style.display="block";
+  if(!solved.has(key)){score+=tried.has(key)?50:100;streak++}solved.add(key);hud();boom(b)}
+ else{b.classList.add("bad");b.disabled=true;tried.add(key);streak=0;hud()}}
+/* Pháo hoa: nổ trong FW_MS = 30ms (0,03s), hạt sáng thêm ~0,8s để nhìn thấy */
+const FW_MS=30,cv=$("#fx"),g=cv.getContext("2d");let P=[],run=false;
+function size(){cv.width=innerWidth;cv.height=innerHeight}size();addEventListener("resize",size);
+function boom(el){const r=el.getBoundingClientRect(),cols=["#ef4444","#f97316","#eab308","#22c55e","#8b5cf6","#0ea5e9"];
+ for(let b=0;b<4;b++){const x=r.left+Math.random()*r.width,y=r.top+Math.random()*r.height;
+  setTimeout(()=>{for(let n=0;n<60;n++){const a=Math.random()*6.283,s=2+Math.random()*5;P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:cols[(b+n)%6]})}if(!run){run=true;loop()}},b*FW_MS/4)}}
+function loop(){g.clearRect(0,0,cv.width,cv.height);P=P.filter(p=>p.l>0);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.l-=.02;g.globalAlpha=Math.max(p.l,0);g.fillStyle=p.c;g.beginPath();g.arc(p.x,p.y,2.5,0,6.283);g.fill()});
+ if(P.length)requestAnimationFrame(loop);else{run=false;g.clearRect(0,0,cv.width,cv.height)}}
+Q.forEach(q=>{const ok=q.a[q.k];for(let n=q.a.length-1;n>0;n--){const m=Math.floor(Math.random()*(n+1));[q.a[n],q.a[m]]=[q.a[m],q.a[n]]}q.k=q.a.indexOf(ok)});
+list=Q.slice();bar();render();
+</script>
+</body>
+</html>
